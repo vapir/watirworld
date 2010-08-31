@@ -105,7 +105,7 @@ Then /^the "([^\"]*)" checkbox should not be checked$/ do |label|
 end
 
 Then /I should see "([^\"]*)"/ do |text|
-  assert(browser.text =~ /#{Regexp::escape(text)}/)
+  assert(browser.text.include?(text), "Browser text should include #{text.inspect}; it does not")
 end
 
 Then /I should not see "([^\"]*)"/ do |text|
