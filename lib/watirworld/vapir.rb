@@ -8,6 +8,13 @@ require 'vapir-firefox/clear_tracks.rb'
 
 Vapir::Browser.default= 'firefox'
 
+# hack because this isn't currently configurable
+class Vapir::Firefox::Element
+  def type_keys
+    false
+  end
+end
+
 module WatirWorld
   module VapirWorld
     def self.browser(options={})
