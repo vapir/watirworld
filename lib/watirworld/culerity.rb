@@ -73,5 +73,5 @@ at_exit do
   browser = WatirWorld::CulerityWorld.browser(:launch => false)
   browser.close if browser && browser.exists?
   server = WatirWorld::CulerityWorld.server(:launch => false)
-  server.close if server
+  server.exit_server if server
 end
