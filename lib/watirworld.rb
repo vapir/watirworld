@@ -37,3 +37,38 @@ module WatirWorld
   end
 end
 World(WatirWorld::WatirAPIHelper)
+
+class RailsLauncher
+  def initialize(port, environment='test')
+    @port = port
+    @rails_server_pid = rails_server_pid = fork do
+      $stdin.reopen "/dev/null"
+      $stdout.reopen "/dev/null"
+      $stderr.reopen "/dev/null"
+      Dir.chdir(Rails.root) do
+        if Rails::VERSION::MAJOR < 3
+          exec "script/server -e #{environment} -p #{port}"
+        else
+          exec "rails server -e #{environment} -p #{port}"
+        end
+      end
+    end
+      
+    # wait for the server to become responsive 
+    running = false
+    Timeout.timeout(30) do
+      while !running
+        begin
+          sock=TCPSocket.new('localhost', port)
+          running = true
+          sock.close
+        rescue
+          sleep 0.2
+        end
+      end
+    end
+    at_exit do
+      Process.kill(6, rails_server_pid)
+    end
+  end
+end
