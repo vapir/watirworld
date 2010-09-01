@@ -44,6 +44,10 @@ When /I choose "([^\"]*)"/ do |field|
   find_by_label_or_id(:radio, field).set(true)
 end
 
+When /I visit (.+)/ do |path|
+  When "I go to #{path}"
+end
+
 When /I go to (.+)/ do |path|
   browser.goto @host + path_to(path)
   assert_successful_response
