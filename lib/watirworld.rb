@@ -56,15 +56,19 @@ class RailsLauncher
       
     # wait for the server to become responsive 
     running = false
-    Timeout.timeout(30) do
-      while !running
-        begin
-          sock=TCPSocket.new('localhost', port)
-          running = true
-          sock.close
-        rescue
-          sleep 0.2
+    started = Time.now
+    timeout = 30
+    while !running
+      require 'socket'
+      begin
+        sock=TCPSocket.new('localhost', port)
+        running = true
+        sock.close
+      rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::ECONNABORTED, Errno::EPIPE
+        if Time.now > started + timeout
+          raise $!.class, "Failed to connect to the rails server on port #{port} after #{timeout} seconds.\n\n#{$!.message}", $!.backtrace
         end
+        sleep 0.2
       end
     end
     at_exit do
